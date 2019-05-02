@@ -35,14 +35,18 @@ def calculate_ambient(alight, areflect):
 def calculate_diffuse(light, dreflect, normal):
     normalize(normal)
     normalize(light)
-    return light*DIFFUSE*normal*light
+    return light*dreflect*normal[DIFFUSE]*light[0][DIFFUSE]
     #pass
 
 def calculate_specular(light, sreflect, view, normal):
+    print(light)
     normalize(normal)
+    #print(normal)
     normalize(sreflect)
+    #print(sreflect)
     normalize(view)
-    return (light * SPECULAR * (2 * normal * (dot_product(normal,sreflect) - dot_product(sreflect,view) ) ) ) ** SPECULAR_EXP
+    #print(view)
+    return (light[0][SPECULAR] * sreflect * (2 * normal[SPECULAR] * (dot_product(normal,sreflect) - dot_product(sreflect,view) ) ) ) ** SPECULAR_EXP
     #pass
 
 def limit_color(color):
