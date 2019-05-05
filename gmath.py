@@ -20,40 +20,66 @@ LOCATION = 0
 COLOR = 1
 SPECULAR_EXP = 4
 
+
 #lighting functions
 def get_lighting(normal, view, ambient, light, areflect, dreflect, sreflect ):
+    color=[0,0,0]
     A=calculate_ambient(ambient,areflect)
     S=calculate_specular(light,sreflect,view,normal)
     D=calculate_diffuse(light,dreflect,normal)
-    return A+S+D
+    for i in range(len(color)):
+        color[i]=A[i]+S[i]+D[i]
+    return limit_color(color)
     #pass
 
 def calculate_ambient(alight, areflect):
-    return dot_product(alight, areflect)
-    #pass
+    color=[0,0,0]
+    for i in range(len(color)):
+        color[i]=alight[i]*areflect[i]
+#    dot_product(alight, areflect)
+    return limit_color(color)
+
 
 def calculate_diffuse(light, dreflect, normal):
+    color=[0,0,0]
     normalize(normal)
-    normalize(light)
-    return light*dreflect*normal[DIFFUSE]*light[0][DIFFUSE]
+    L=light[LOCATION]
+    normalize(L)
+    for i in range(len(color)):
+        color[i]=light[1][i]*dreflect[i]*dot_product(L,normal)
+    return limit_color(color)
     #pass
 
+
 def calculate_specular(light, sreflect, view, normal):
-    print(light)
+    color=[0,0,0]
+    #print(light[LOCATION])
+    L=light[0]
+    normalize(L)
+    #print(light[LOCATION])
     normalize(normal)
     #print(normal)
-    normalize(sreflect)
+    #normalize(sreflect)
     #print(sreflect)
     normalize(view)
     #print(view)
-    return (light[0][SPECULAR] * sreflect * (2 * normal[SPECULAR] * (dot_product(normal,sreflect) - dot_product(sreflect,view) ) ) ) ** SPECULAR_EXP
+    A=[0,0,0]
+    for i in range(len(A)):
+        A[i]=(2*dot_product(normal,L)*normal[i]-L[i])
+    #print(A)
+    for i in range(len(color)):
+        color[i]=light[1][i]*sreflect[i]*dot_product(A,view) ** SPECULAR_EXP
+    return limit_color(color)
     #pass
 
 def limit_color(color):
-    if color>255:
-        color=255
-    if color<0:
-        color=0
+    for i in range(len(color)):
+        c=color[i]
+        if c>255:
+            color[i]=255
+        if c<0:
+            color[i]=0
+    return color
         
     #pass
 
